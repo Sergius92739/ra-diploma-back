@@ -17,35 +17,36 @@ const topSaleIds = [66, 65, 73];
 const moreCount = 6;
 
 const itemBasicMapper = item => ({
-    id: item.id,
-    category: item.category,
-    title: item.title,
-    price: item.price,
-    images: item.images,
+  id: item.id,
+  category: item.category,
+  title: item.title,
+  price: item.price,
+  images: item.images,
 });
 
 const randomNumber = (start, stop) => {
-    return Math.floor(Math.random() * (stop - start + 1)) + start;
+  return Math.floor(Math.random() * (stop - start + 1)) + start;
 }
 
 const fortune = (ctx, body = null, status = 200) => {
-    // Uncomment for delay
-    
-    // const delay = randomNumber(1, 10) * 1000;
-    const delay = 0;
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            // Uncomment for error generation
-            if (Math.random() > 0.8) {
-                reject(new Error('Something bad happened'));
-                return;
-            }
+  // Uncomment for delay
+  
+  //const delay = randomNumber(1, 10) * 1000;
+  const delay = 0;
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      // Uncomment for error generation
 
-            ctx.response.status = status;
-            ctx.response.body = body;
-            resolve();
-        }, delay);
-    })
+       /* if (Math.random() > 0.8) {
+         reject(new Error('Something bad happened'));
+         return;
+       } */
+
+      ctx.response.status = status;
+      ctx.response.body = body;
+      resolve();
+    }, delay);
+  })
 }
 
 router.get('/api/top-sales', async (ctx, next) => {
@@ -64,11 +65,11 @@ router.get('/api/items', async (ctx, next) => {
   const q = query.q === undefined ? '' : query.q.trim().toLowerCase();
 
   const filtered = items
-      .filter(o => categoryId === 0 || o.category === categoryId)
-      .filter(o => o.title.toLowerCase().includes(q) || o.color.toLowerCase() === q)
-      .slice(offset, offset + moreCount)
-      .map(itemBasicMapper);
-  
+    .filter(o => categoryId === 0 || o.category === categoryId)
+    .filter(o => o.title.toLowerCase().includes(q) || o.color.toLowerCase() === q)
+    .slice(offset, offset + moreCount)
+    .map(itemBasicMapper);
+
   return fortune(ctx, filtered);
 });
 
@@ -76,35 +77,36 @@ router.get('/api/items/:id', async (ctx, next) => {
   const id = Number(ctx.params.id);
   const item = items.find(o => o.id === id);
   if (item === undefined) {
-      return fortune(ctx, 'Not found', 404);
+    return fortune(ctx, 'Not found', 404);
   }
+
   return fortune(ctx, item);
 });
 
 router.post('/api/order', async (ctx, next) => {
   const { owner: { phone, address }, items } = ctx.request.body;
   if (typeof phone !== 'string') {
-      return fortune(ctx, 'Bad Request: Phone', 400);
+    return fortune(ctx, 'Bad Request: Phone', 400);
   }
   if (typeof address !== 'string') {
-      return fortune(ctx, 'Bad Request: Address', 400);
+    return fortune(ctx, 'Bad Request: Address', 400);
   }
   if (!Array.isArray(items)) {
-      return fortune(ctx, 'Bad Request: Items', 400);
+    return fortune(ctx, 'Bad Request: Items', 400);
   }
   if (!items.every(({ id, price, count }) => {
-      if (typeof id !== 'number' || id <= 0) {
-          return false;
-      }
-      if (typeof price !== 'number' || price <= 0) {
-          return false;
-      }
-      if (typeof count !== 'number' || count <= 0) {
-          return false;
-      }
-      return true;
+    if (typeof id !== 'number' || id <= 0) {
+      return false;
+    }
+    if (typeof price !== 'number' || price <= 0) {
+      return false;
+    }
+    if (typeof count !== 'number' || count <= 0) {
+      return false;
+    }
+    return true;
   })) {
-      return fortune(ctx, 'Bad Request', 400);
+    return fortune(ctx, 'Bad Request', 400);
   }
 
   return fortune(ctx, null, 204);
