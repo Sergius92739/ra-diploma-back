@@ -1,4 +1,4 @@
-## Server: <a href="https://ra-diploma-sergius.herokuapp.com/">Heroku</a>
+## Server: <a href="https://ra-diploma-back.onrender.com">Render</a>
 
 ---
 
